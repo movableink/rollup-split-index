@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const splitIndex = require('../src/index');
+
+const inputFile = process.argv[2];
+splitIndex(inputFile);

@@ -1,0 +1,32 @@
+{
+  "name": "rollup-split-index",
+  "version": "1.0.0",
+  "description": "Given an es6 input file, output its dependencies in a separate bundle",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movableink/rollup-split-index.git"
+  },
+  "keywords": [
+    "rollup"
+  ],
+  "author": "Michael Nutt <michael@movableink.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/movableink/rollup-split-index/issues"
+  },
+  "homepage": "https://github.com/movableink/rollup-split-index#readme",
+  "dependencies": {
+    "parse-es6-imports": "^1.0.1",
+    "rollup": "^0.51.3",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.11.0",
+    "mocha": "^4.0.1"
+  }
+}
