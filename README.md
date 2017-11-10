@@ -20,7 +20,7 @@ This will load `index.js`, trace its dependency tree including `node_modules`, a
 
 In addition, this will transform `index.js` by rewriting es6 imports and exports to global declarations. For example:
 
-```
+```javascript
 import jQuery from 'jquery';
 ...
 export default MyApp
@@ -28,7 +28,7 @@ export default MyApp
 
 becomes:
 
-```
+```javascript
 const jQuery = __rollup_vendor['9db3656a25060577330073bbda43fa23']
 ...
 window.MyApp = MyApp;
