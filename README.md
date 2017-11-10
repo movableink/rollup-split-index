@@ -2,6 +2,8 @@
 
 > Splits dependency tree into the entrypoint file and all the rest.
 
+The purpose of this module is to use rollup to bundle all dependencies into a single file while leaving the `index.js` file human-readable (and human-editable).
+
 ## Install
 
 ```sh
