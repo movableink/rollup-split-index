@@ -1,53 +1,65 @@
 const importParser = require("parse-es6-imports/parser");
-const resolve = require("rollup-plugin-node-resolve");
+const resolver = require("rollup-plugin-node-resolve");
 const moduleHash = require("./module-hash");
+const { resolve } = require("path");
+const { parse } = require("acorn");
+
+const referenceName = "__rollup_vendor";
 
 // Replace es6 imports and exports with global imports/exports
-module.exports = function importExportToGlobal(input) {
+module.exports = function importExportToGlobal() {
   const defaultExportRegex = new RegExp(
     /^\s*export\s+default\s+([a-zA-Z_$][0-9a-zA-Z_$]*);?\s*/
   );
 
+  let entry;
+
   return {
+    name: "import-export-to-global",
+
+    options(opts) {
+      entry = resolve(opts.input);
+    },
+
     transform(code, id) {
-      if (id === input.id) {
-        const lines = code.split("\n").map(line => {
-          // Replace export lines with global variable declarations
-          if (line.match(defaultExportRegex)) {
-            const match = line.match(defaultExportRegex);
-            return `window.${match[1]} = ${match[1]};`;
-          }
+      if (id === entry) {
+        return code
+          .split("\n")
+          .map(line => {
+            try {
+              const parsed = parse(line, { sourceType: "module" }).body[0];
 
-          function keyFromModule(moduleName) {
-            return resolve()
-              .resolveId(parsed.fromModule, id)
-              .then(res => moduleHash(res));
-          }
+              if (parsed.type === "ImportDeclaration") {
+                const from = parsed.source.value;
+                const importType = parsed.specifiers[0].type;
 
-          const parsed = importParser(line);
+                if (importType === "ImportDefaultSpecifier") {
+                  const name = parsed.specifiers[0].local.name;
+                  return `const ${name} = ${referenceName}['${from}'];`;
+                } else {
+                  const names = parsed.specifiers
+                    .map(s => s.local.name)
+                    .join(", ");
+                  return `const { ${names} } = ${referenceName}['${from}'];`;
+                }
+              } else if (parsed.type === "ExportDefaultDeclaration") {
+                const name = parsed.declaration.name;
+                return `window.${name} = ${name};`;
+              }
+            } catch (e) {
+              // We don't care about parsing errors since we're going line
+              // by line and some lines may not be valid in of themselves,
+              // but all of the ones we care about are valid.
+            }
 
-          if (parsed.defaultImport) {
-            // Replace `import x from 'y';`
-            return keyFromModule(parsed.fromModule).then(key => {
-              return `const ${parsed.defaultImport} = __rollup_vendor['${key}'];`;
-            });
-          } else if (parsed.namedImports.length) {
-            // Replace `import { x } from 'y';`
-            return keyFromModule(parsed.fromModule).then(key => {
-              return `const ${parsed.defaultImport} = __rollup_vendor['${key}'].${parsed.defaultImport};`;
-            });
-          } else {
-            // Not an import line
             return line;
-          }
-        });
-
-        return Promise.all(lines).then(lines => {
-          return lines.join("\n");
-        });
+          })
+          .join("\n");
       }
 
       return code;
     }
   };
 };
+
+module.exports.referenceName = referenceName;
