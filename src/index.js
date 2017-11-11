@@ -5,8 +5,15 @@ const commonjs = require("rollup-plugin-commonjs");
 
 const importExportToGlobal = require("./import-export-to-global");
 const dependenciesOnly = require("./dependencies-only");
+const moduleHash = require("./module-hash");
 
 module.exports = async function splitIndex(inputFile) {
+  const tree = {
+    input: inputFile,
+    output: [],
+    dependencies: {}
+  };
+
   // Do an initial bundling just to get dependency list
   const initialBundle = await rollup.rollup({
     input: inputFile,
@@ -15,7 +22,10 @@ module.exports = async function splitIndex(inputFile) {
 
   // Last module is our entrypoint
   const input = initialBundle.modules[initialBundle.modules.length - 1];
-  console.log("Found Dependencies:", input.dependencies);
+
+  tree.dependencies = input.dependencies.map(dep => {
+    return [dep, moduleHash(dep)];
+  });
 
   // Output a vendor.js file containing everything imported from
   // index.js, under a global `__rollup_vendor` variable
@@ -23,12 +33,14 @@ module.exports = async function splitIndex(inputFile) {
     input: inputFile,
     plugins: [resolve(), commonjs(), dependenciesOnly(input)]
   });
-  await vendorBundle.write({
-    name: "__rollup_vendor",
-    file: "dist/vendor.js",
-    format: "iife"
-  });
-  console.log("Wrote vendor file to dist/vendor.js");
+  tree.output.push([
+    vendorBundle,
+    {
+      name: "__rollup_vendor",
+      file: "dist/vendor.js",
+      format: "iife"
+    }
+  ]);
 
   // Output an index.js file with es6 imports and exports rewritten to
   // import from globals and export to globals
@@ -36,9 +48,13 @@ module.exports = async function splitIndex(inputFile) {
     input: inputFile,
     plugins: [resolve(), commonjs(), importExportToGlobal(input)]
   });
-  await indexBundle.write({
-    file: "dist/index.js",
-    format: "es"
-  });
-  console.log("Wrote main file to dist/index.js");
+  tree.output.push([
+    indexBundle,
+    {
+      file: "dist/index.js",
+      format: "es"
+    }
+  ]);
+
+  return tree;
 };

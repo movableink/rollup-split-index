@@ -3,4 +3,15 @@
 const splitIndex = require('../src/index');
 
 const inputFile = process.argv[2];
-splitIndex(inputFile);
+
+splitIndex(inputFile).then(tree => {
+  console.log(`Finding ${inputFile} dependencies`);
+  tree.dependencies.forEach(([file, hash]) => {
+    console.log(`__rollup_vendor['${hash}'] => ${file}`);
+  });
+
+  tree.output.forEach(([bundle, opts]) => {
+    bundle.write(opts);
+    console.log(`Writing ${opts.file}`);
+  });
+});
