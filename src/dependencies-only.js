@@ -21,7 +21,7 @@ module.exports = function dependenciesOnly() {
     async transform(code, id, a) {
       // inputFile is getting replaced with a shim
       if (id === entry) {
-        const parsed = parse(code, { sourceType: "module" });
+        const parsed = parse(code, { sourceType: "module", ecmaVersion: 8 });
         const imports = parsed.body.filter(n => n.type === "ImportDeclaration");
 
         const dependencies = imports.map(imp => imp.source.value);

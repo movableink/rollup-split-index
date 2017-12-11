@@ -27,7 +27,10 @@ module.exports = function importExportToGlobal() {
           .split("\n")
           .map(line => {
             try {
-              const parsed = parse(line, { sourceType: "module" }).body[0];
+              const parsed = parse(line, {
+                sourceType: "module",
+                ecmaVersion: 8
+              }).body[0];
 
               if (parsed.type === "ImportDeclaration") {
                 const from = parsed.source.value;
