@@ -30,13 +30,13 @@ module.exports = function dependenciesOnly() {
           return `import dep${i} from '${dep}';`;
         });
 
-        out.push("const out = {};");
+        out.push("const __dependenciesOut = {};");
 
         dependencies.forEach((dep, i) => {
-          out.push(`out['${dep}'] = dep${i};`);
+          out.push(`__dependenciesOut['${dep}'] = dep${i};`);
         });
 
-        out.push("export default out;");
+        out.push("export default __dependenciesOut;");
 
         return out.join("\n");
       }
