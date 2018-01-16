@@ -1,5 +1,4 @@
 const { createFilter } = require("rollup-pluginutils");
-const importParser = require("parse-es6-imports/parser");
 const resolver = require("rollup-plugin-node-resolve");
 const moduleHash = require("./module-hash");
 const { resolve } = require("path");

@@ -795,10 +795,6 @@ os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
 
-parse-es6-imports@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/parse-es6-imports/-/parse-es6-imports-1.0.1.tgz#fbfea61afcd94435c7f697fc439616c18853771b"
-
 parse-glob@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/parse-glob/-/parse-glob-3.0.4.tgz#b2c376cfb11f35513badd173ef0bb6e3a388391c"
