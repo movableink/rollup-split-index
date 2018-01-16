@@ -21,12 +21,12 @@
   "homepage": "https://github.com/movableink/rollup-split-index#readme",
   "dependencies": {
     "rollup": "^0.54.0",
-    "rollup-pluginutils": "^2.0.1",
     "rollup-plugin-commonjs": "^8.2.6",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-pluginutils": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^4.11.0",
-    "mocha": "^4.0.1"
+    "mocha": "^4.1.0"
   }
 }
