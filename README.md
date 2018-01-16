@@ -69,7 +69,7 @@ export default MyApp
 becomes:
 
 ```javascript
-const jQuery = __rollup_vendor['9db3656a25060577330073bbda43fa23']
+const jQuery = __rollup_vendor['jquery']
 ...
 window.MyApp = MyApp;
 ```

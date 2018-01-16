@@ -19,18 +19,38 @@ module.exports = function importExportToGlobal(options = {}) {
         ecmaVersion: 8
       }).body[0];
 
+      // Find all import statements to rewrite them
       if (parsed.type === "ImportDeclaration") {
         const from = parsed.source.value;
-        const importType = parsed.specifiers[0].type;
+        const out = [],
+          destructuredSpecs = [];
 
-        if (importType === "ImportDefaultSpecifier") {
-          const name = parsed.specifiers[0].local.name;
-          return `const ${name} = ${options.importName}['${from}'];`;
-        } else {
-          const names = parsed.specifiers.map(s => s.local.name).join(", ");
-          return `const { ${names} } = ${options.importName}['${from}'];`;
+        // Import statements can have multiple specifiers; for instance,
+        // `import a, {b, c} from 'foo';` has three.
+        parsed.specifiers.forEach(spec => {
+          if (spec.type === "ImportDefaultSpecifier") {
+            const name = spec.local.name;
+            out.push(`const ${name} = ${options.importName}['${from}'];`);
+          } else {
+            destructuredSpecs.push(spec.local.name);
+          }
+        });
+
+        // If using destructured import statements, we need to read from
+        // the key with `:obj` appended. We have to differentiate because
+        // es6 destructured imports and destructured variable declarations
+        // are not equivalent.
+        if (destructuredSpecs.length) {
+          const names = destructuredSpecs.join(", ");
+          out.push(
+            `const { ${names} } = ${options.importName}['${from}:obj'];`
+          );
         }
+
+        return out.join("\n");
       } else if (parsed.type === "ExportDefaultDeclaration") {
+        // We set our default exported value as a window global with our
+        // name, for convenience
         const name = parsed.declaration.name;
         return `window.${name} = ${name};`;
       }
