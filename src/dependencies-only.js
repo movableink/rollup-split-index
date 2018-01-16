@@ -6,42 +6,37 @@ const { parse } = require("acorn");
 // Replace the entrypoint with a file consisting solely of an import
 // list of its dependencies, stuffed into the default export
 module.exports = function dependenciesOnly() {
-  let options, entry;
+  let entry;
+
   return {
     name: "dependencies-only",
 
     options(opts) {
-      options = Object.assign({}, opts);
-      options.plugins = opts.plugins.filter(
-        plugin => plugin.name !== "dependencies-only"
-      );
-      entry = resolve(options.input);
+      entry = resolve(opts.input);
     },
 
     async transform(code, id, a) {
       // inputFile is getting replaced with a shim
-      if (id === entry) {
-        const parsed = parse(code, { sourceType: "module", ecmaVersion: 8 });
-        const imports = parsed.body.filter(n => n.type === "ImportDeclaration");
+      if (id !== entry) return null;
 
-        const dependencies = imports.map(imp => imp.source.value);
+      const parsed = parse(code, { sourceType: "module", ecmaVersion: 8 });
+      const imports = parsed.body.filter(n => n.type === "ImportDeclaration");
 
-        let out = dependencies.map((dep, i) => {
-          return `import dep${i} from '${dep}';`;
-        });
+      const dependencies = imports.map(imp => imp.source.value);
 
-        out.push("const __dependenciesOut = {};");
+      let out = dependencies.map((dep, i) => {
+        return `import dep${i} from '${dep}';`;
+      });
 
-        dependencies.forEach((dep, i) => {
-          out.push(`__dependenciesOut['${dep}'] = dep${i};`);
-        });
+      out.push("const __dependenciesOut = {};");
 
-        out.push("export default __dependenciesOut;");
+      dependencies.forEach((dep, i) => {
+        out.push(`__dependenciesOut['${dep}'] = dep${i};`);
+      });
 
-        return out.join("\n");
-      }
+      out.push("export default __dependenciesOut;");
 
-      return null; // otherwise do nothing
+      return { code: out.join("\n"), map: null };
     }
   };
 };

@@ -7,7 +7,7 @@ const { parse } = require("acorn");
 
 // Replace es6 imports and exports with global imports/exports
 module.exports = function importExportToGlobal(options = {}) {
-  var filter = createFilter(options.include, options.exclude);
+  const filter = createFilter(options.include, options.exclude);
 
   options.importName = options.importName || "__rollup_vendor";
 
