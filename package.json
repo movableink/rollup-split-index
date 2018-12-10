@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/movableink/rollup-split-index#readme",
   "dependencies": {
+    "magic-string": "^0.25.1",
     "rollup": "^0.54.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
