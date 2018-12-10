@@ -24,6 +24,23 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
       });
   });
 
+  it("follows symlinks", function() {
+    return rollup
+      .rollup({
+        input: "samples/linked/main.js",
+        plugins: [importExportToGlobal()]
+      })
+      .then(function(bundle) {
+        return bundle.generate({ format: "es" });
+      })
+      .then(function(generated) {
+        const code = generated.code;
+        const expected = "const utilities = __rollup_vendor['./utilities'];";
+
+        assert.ok(code.indexOf(expected) !== -1, expected);
+      });
+  });
+
   it("accepts importName option", function() {
     return rollup
       .rollup({

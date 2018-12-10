@@ -1,6 +1,7 @@
 const rollup = require("rollup");
 const { resolve } = require("path");
 const moduleHash = require("./module-hash");
+const { realpathSync } = require("fs");
 const { parse } = require("acorn");
 
 /**
@@ -23,10 +24,14 @@ module.exports = function dependenciesOnly() {
     name: "dependencies-only",
 
     options(opts) {
-      entry = resolve(opts.input);
+      entry = realpathSync(resolve(opts.input));
     },
 
     async transform(code, id, a) {
+      try {
+        id = realpathSync(id);
+      } catch(_e) { /* not all will be files */ }
+
       // inputFile is getting replaced with a shim
       if (id !== entry) return null;
 

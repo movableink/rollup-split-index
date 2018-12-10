@@ -2,6 +2,7 @@ const { createFilter } = require("rollup-pluginutils");
 const resolver = require("rollup-plugin-node-resolve");
 const moduleHash = require("./module-hash");
 const { resolve } = require("path");
+const { realpathSync } = require("fs");
 const { parse } = require("acorn");
 
 // Replace es6 imports and exports with global imports/exports
@@ -67,10 +68,14 @@ module.exports = function importExportToGlobal(options = {}) {
     name: "import-export-to-global",
 
     options(opts) {
-      entry = resolve(opts.input);
+      entry = realpathSync(resolve(opts.input));
     },
 
     transform(code, id) {
+      try {
+        id = realpathSync(id);
+      } catch(_e) { /* not all will be files */ }
+
       if (id !== entry || !filter(id)) return { code, map: null };
 
       const transformedCode = code
