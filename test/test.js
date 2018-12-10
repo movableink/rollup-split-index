@@ -76,10 +76,29 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
         assert.ok(code.indexOf(expected) !== -1, `expected: ${expected}`);
       });
   });
+
+  it("rewrites default export statements", function() {
+    return rollup
+      .rollup({
+        input: "samples/basic/main.js",
+        plugins: [importExportToGlobal()],
+        external: ["jquery", "big-module"]
+      })
+      .then(function(bundle) {
+        return bundle.generate({ format: "es", name: "outputVar" });
+      })
+      .then(function(generated) {
+        const code = generated.code;
+        const expected =
+          "window.Main = Main;";
+
+        assert.ok(code.indexOf(expected) !== -1, `expected: ${expected}`);
+      });
+  });
 });
 
 describe("rollup-plugin-split-index dependencies-only", function() {
-  it("rewrites es6 imports to global statements", function() {
+  it("bundles all imported modules", function() {
     return rollup
       .rollup({
         input: "samples/basic/main.js",
@@ -91,7 +110,7 @@ describe("rollup-plugin-split-index dependencies-only", function() {
       })
       .then(function(generated) {
         const code = generated.code;
-        const expected = "";
+        const expected = "const aSubmodule =";
 
         assert.ok(code.indexOf(expected) !== -1, "");
       });
