@@ -27,7 +27,7 @@ module.exports = function dependenciesOnly() {
       entry = realpathSync(resolve(opts.input));
     },
 
-    async transform(code, id, a) {
+    transform(code, id, a) {
       try {
         id = realpathSync(id);
       } catch(_e) { /* not all will be files */ }
