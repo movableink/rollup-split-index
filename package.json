@@ -1,6 +1,6 @@
 {
   "name": "rollup-split-index",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Given an es6 input file, output its dependencies in a separate bundle",
   "main": "src/index.js",
   "scripts": {
