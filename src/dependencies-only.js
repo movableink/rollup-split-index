@@ -18,13 +18,14 @@ const { parse } = require("acorn");
  **/
 
 module.exports = function dependenciesOnly() {
-  let entry;
+  let entry, resolvedEntry;
 
   return {
     name: "dependencies-only",
 
     options(opts) {
-      entry = realpathSync(resolve(opts.input));
+      entry = resolve(opts.input);
+      resolvedEntry = realpathSync(entry);
     },
 
     transform(code, id, a) {
@@ -33,7 +34,7 @@ module.exports = function dependenciesOnly() {
       } catch(_e) { /* not all will be files */ }
 
       // inputFile is getting replaced with a shim
-      if (id !== entry) return null;
+      if (id !== resolvedEntry) return null;
 
       // Parse the source into an AST and pick out the import statements
       const parsed = parse(code, { sourceType: "module", ecmaVersion: 8 });

@@ -49,13 +49,14 @@ module.exports = function importExportToGlobal(options = {}) {
 
   options.importName = options.importName || "__rollup_vendor";
 
-  let entry;
+  let entry, resolvedEntry;
 
   return {
     name: "import-export-to-global",
 
     options(opts) {
-      entry = realpathSync(resolve(opts.input));
+      entry = resolve(opts.input);
+      resolvedEntry = realpathSync(entry);
     },
 
     transform(code, id) {
@@ -63,7 +64,7 @@ module.exports = function importExportToGlobal(options = {}) {
         id = realpathSync(id);
       } catch(_e) { /* not all will be files */ }
 
-      if (id !== entry || !filter(id)) return { code, map: null };
+      if (id !== resolvedEntry || !filter(id)) return { code, map: null };
 
       const parsed = parse(code, {
         sourceType: "module",
