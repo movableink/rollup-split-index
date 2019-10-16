@@ -17,7 +17,7 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
         return bundle.generate({ format: "es" });
       })
       .then(function(generated) {
-        const code = generated.code;
+        const code = generated.output[0].code;
         const expected = "const utilities = __rollup_vendor['./utilities'];";
 
         assert.ok(code.indexOf(expected) !== -1, expected);
@@ -34,7 +34,7 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
         return bundle.generate({ format: "es" });
       })
       .then(function(generated) {
-        const code = generated.code;
+        const code = generated.output[0].code;
         const expected = "const utilities = __rollup_vendor['./utilities'];";
 
         assert.ok(code.indexOf(expected) !== -1, expected);
@@ -51,7 +51,7 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
         return bundle.generate({ format: "es", name: "outputVar" });
       })
       .then(function(generated) {
-        const code = generated.code;
+        const code = generated.output[0].code;
         const expected = "const utilities = aDifferentVar['./utilities'];";
 
         assert.ok(code.indexOf(expected) !== -1, `expected: ${expected}`);
@@ -69,7 +69,7 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
         return bundle.generate({ format: "es", name: "outputVar" });
       })
       .then(function(generated) {
-        const code = generated.code;
+        const code = generated.output[0].code;
         const expected =
           "const { aSubmodule } = __rollup_vendor['./big-module:obj'];";
 
@@ -88,7 +88,7 @@ describe("rollup-plugin-split-index import-export-to-global", function() {
         return bundle.generate({ format: "es", name: "outputVar" });
       })
       .then(function(generated) {
-        const code = generated.code;
+        const code = generated.output[0].code;
         const expected =
           "window.Main = Main;";
 
@@ -109,7 +109,7 @@ describe("rollup-plugin-split-index dependencies-only", function() {
         return bundle.generate({ name: "__rollup_vendor", format: "iife" });
       })
       .then(function(generated) {
-        const code = generated.code;
+        const code = generated.output[0].code;
         const expected = "const aSubmodule =";
 
         assert.ok(code.indexOf(expected) !== -1, "");
